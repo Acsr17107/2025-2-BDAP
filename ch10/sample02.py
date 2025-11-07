@@ -23,7 +23,7 @@ def get_population(file_path):
 
 # --- 1. 파일 경로 설정 ---
 
-# sample02.py에서 사용된 대한민국 데이터 파일 경로
+# 대한민국 데이터 파일 경로
 kor_file_path = '../ch05/data/covid_korea.csv'
 
 # sample01.py를 실행했을 때 생성되는 하와이 데이터 파일 경로
