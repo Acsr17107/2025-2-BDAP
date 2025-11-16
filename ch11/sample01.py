@@ -2,7 +2,7 @@ import pandas as pd
 
 from ch11.common_functon import save_csv
 
-file_name = '../../../Downloads/survey_results_public.csv'
+file_name = './survey_results_public.csv'
 df_raw = pd.read_csv(file_name)
 
 print('-'*50)
