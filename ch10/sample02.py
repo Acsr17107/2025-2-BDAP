@@ -1,53 +1,44 @@
 import pandas as pd
-import os
+import matplotlib.pyplot as plt
+from ch05.common_function import init_plt
 
-def get_population(file_path):
+#한글폰트설정
+init_plt()
 
-    try:
-        df = pd.read_csv(file_path)
-        index_df = df.set_index('date')
+COL_POPULATION = 'population'
+COL_TOTAL_CASES = 'total_cases'
 
-        population = index_df['population'].iat[0]
-        return population
+# file_path에 대한 데이터 리턴 함수(dataframe)
+def get_covid_data_series(file_path):
+    df = pd.read_csv(file_path)
+    index_df = df.set_index('date')
 
-    except FileNotFoundError:
-        print(f" 파일을 찾을 수 없습니다: {file_path}")
-        return None
-    except KeyError:
-        print(f"️ 파일에 'date' 또는 'population' 열이 없습니다: {file_path}")
-        return None
-    except Exception as e:
-        print(f" 데이터 처리 중 문제가 발생했습니다: {e}")
-        return None
+    #TODO: 은선아 이코드 확인좀!!!
+    population = df[COL_POPULATION].iat[0]
 
+    return {
+        COL_POPULATION: population,
+        'data_sr': index_df[COL_TOTAL_CASES]
+    }
+#end-def
 
-# --- 1. 파일 경로 설정 ---
+kor_data = get_covid_data_series('../ch05/data/covid_korea.csv')
+kor_data_index = kor_data['data_sr'].index
 
-# 대한민국 데이터 파일 경로
-kor_file_path = '../ch05/data/covid_korea.csv'
+hi_data = get_covid_data_series('./hi_covid_data.csv')
+hi_data_index = hi_data['data_sr'].index
 
-# sample01.py를 실행했을 때 생성되는 하와이 데이터 파일 경로
-# 이 스크립트 실행 전 sample01.py가 먼저 실행되어
-# 'hi_covid_data.csv' 파일이 생성되어 있어야 함.
-hi_file_path = './hi_covid_data.csv'
+#2개의 인덱스를 합침.
+data_index = kor_data_index.union(hi_data_index)
 
-# --- 2. 로직 실행 및 결과 출력
-print("데이터 추출을 시작합니다...")
+##################################################################
+#인구비율 구하기!!!!!
+rate = round(kor_data[COL_POPULATION] / hi_data[COL_POPULATION], 2)
 
-kor_population = get_population(kor_file_path)
-hi_population = get_population(hi_file_path)
-
-print('-' * 50)
-if kor_population is not None:
-    print(f'대한민국 인구수: {kor_population:,.0f} 명')
-
-if hi_population is not None:
-    print(f'하와이 인구수: {hi_population:,.0f} 명')
-print('-' * 50)
-
-# --- 3. 인구 비율 계산
-if kor_population is not None and hi_population is not None:
-    rate = kor_population / hi_population
-    print(f' 대한민국/하와이 인구 비율: {rate:.2f} 배')
-else:
-    print("인구수 정보를 모두 가져오지 못해 비율 계산을 생략.")
+covid_df = pd.DataFrame(
+    {
+        '대한민국': kor_data['data_sr'],
+        '하와이': hi_data['data_sr'] * rate
+    }, index = data_index)
+covid_df.plot.line()
+plt.show()
