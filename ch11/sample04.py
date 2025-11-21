@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from ch11.common_functon import save_csv
 
 #### 개발자연령
-file_name = './age_count.csv'
+file_name = './data_age.csv'
 df_raw = pd.read_csv(file_name)
 
 COLUMN_AGE = 'Age'
